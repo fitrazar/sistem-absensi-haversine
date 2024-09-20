@@ -25,6 +25,7 @@ Route::prefix('')->middleware(['auth'])->group(function () {
         Route::post('/attendance', [StudentAttendanceController::class, 'store'])->name('attendance.store');
         Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
         Route::get('/history/{attendance}', [HistoryController::class, 'show'])->name('history.show');
+        Route::delete('/history/{attendance}', [HistoryController::class, 'destroy'])->name('history.destroy');
     });
 
 

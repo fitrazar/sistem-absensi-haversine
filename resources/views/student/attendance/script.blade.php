@@ -166,7 +166,8 @@
                     $('#toast-top-left').addClass("block").removeClass("hidden").show();
                 },
                 error: function(error) {
-                    console.error('Failed to send data:', error);
+                    $('#notif').text(error.responseJSON.message);
+                    $('#toast-top-left').addClass("block").removeClass("hidden").show();
                 },
                 complete: function() {
                     $('#loading').hide();

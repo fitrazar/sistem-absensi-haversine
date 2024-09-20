@@ -12,7 +12,7 @@
 <div class="hidden" id="permit">
     <x-input.input-label for="izin" :value="__('Keterangan')" />
     <x-input.text-input id="izin" name="permit" class="mt-1 w-full" type="text" maxlength="50"
-        placeholder="Demam" required />
+        placeholder="Acara Keluarga" required />
 </div>
 <div class="hidden" id="fileUpload">
     <x-input.input-label for="sickFile" :value="__('Surat Keterangan')" />

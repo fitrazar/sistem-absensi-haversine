@@ -20,6 +20,7 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
+
         $student = NULL;
         $userId = $request->id;
         $stats = $request->status ?? NULL;
@@ -79,8 +80,11 @@ class AttendanceController extends Controller
             ->first();
 
         if ($request->status == 'Absen Mapel') {
-            $currentDay = now()->dayOfWeek;
+            if (!$existingAttendanceMasuk && !$existingAttendanceTerlambat) {
+                return response()->json(['message' => 'Anda harus melakukan absen masuk terlebih dahulu']);
+            }
 
+            $currentDay = now()->dayOfWeek;
             $days = [
                 1 => 'Senin',
                 2 => 'Selasa',
@@ -163,34 +167,43 @@ class AttendanceController extends Controller
 
         if (!$absenLat && !$absenLng || $stats) {
             if ($stats == 'Sakit') {
-                if (!$request->file('file')) {
-                    return response()->json(['message' => 'File wajib ditambahkan!']);
-                } else {
-                    $filename = time() . '.png';
-                    $path = $request->file('file')->storeAs('attendance/' . $student->name . '/', $filename);
+                $request->validate([
+                    'file' => 'required|image|mimes:jpg,jpeg,png|max:4096',
+                ], [
+                    'file.required' => 'Surat Sakit wajib diisi!',
+                    'file.image' => 'Surat Sakit harus berupa gambar!',
+                    'file.mimes' => 'Surat Sakit harus format jpg,jpeg,png!',
+                    'file.max' => 'Surat Sakit tidak boleh melebihi 4MB!',
+                ]);
+                $filename = time() . '.png';
+                $path = $request->file('file')->storeAs('attendance/' . $student->name . '/', $filename);
 
-                    Attendance::create([
-                        'student_id' => $student->id,
-                        'coordinate' => NULL,
-                        'status' => $status,
-                        'note' => $filename
-                    ]);
+                Attendance::create([
+                    'student_id' => $student->id,
+                    'coordinate' => NULL,
+                    'status' => $status,
+                    'note' => $filename
+                ]);
 
-                    return response()->json(['message' => 'Absen Sakit Berhasil Dilakukan']);
-                }
+                return response()->json(['message' => 'Absen Sakit Berhasil Dilakukan']);
+
             } else {
-                if (!$note) {
-                    return response()->json(['message' => 'Keterangan wajib diisi!']);
-                } else {
-                    Attendance::create([
-                        'student_id' => $student->id,
-                        'coordinate' => NULL,
-                        'status' => $status,
-                        'note' => $note
-                    ]);
+                $request->validate([
+                    'note' => 'required|string|max:100',
+                ], [
+                    'note.required' => 'Keterangan wajib diisi!',
+                    'note.string' => 'Keterangan harus berupa teks!',
+                    'note.max' => 'Keterangan tidak boleh lebih dari 100 karakter!',
+                ]);
+                Attendance::create([
+                    'student_id' => $student->id,
+                    'coordinate' => NULL,
+                    'status' => $status,
+                    'note' => $note
+                ]);
 
-                    return response()->json(['message' => 'Absen Izin Berhasil Dilakukan!']);
-                }
+                return response()->json(['message' => 'Absen Izin Berhasil Dilakukan!']);
+
             }
         }
 

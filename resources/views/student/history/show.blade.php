@@ -22,7 +22,9 @@
                         $currentTime = Carbon\Carbon::now();
 
                     @endphp
-                    {{-- @if (($date->isToday() && $currentTime->between($timeInEarly, $timeInLate)) || ($date->isToday() && $currentTime->gt($timeInLate) && $currentTime->lt($timeOutEarly)))
+                    @if (
+                        ($date->isToday() && $currentTime->between($timeInEarly, $timeInLate)) ||
+                            ($date->isToday() && $currentTime->gt($timeInLate) && $currentTime->lt($timeOutEarly)))
                         <x-button.danger-button class="btn text-white" onclick="my_modal_1.showModal()">
                             <i class="fa-regular fa-trash-can"></i>
                             Hapus
@@ -35,9 +37,10 @@
                                 <p>jika kamu menghapus absen masuk di jam setelah absen masuk berakhir </p>
                                 <p>lalu kamu melakukan absen lagi, maka status absen masuk kamu berubah menjadi
                                     terlambat.</p>
+                                <p>Penghapusan Absen dilakukan hanya jika kamu salah menginput status absen.</p>
                                 <p class="py-4">Apakah kamu yakin ingin menghapus absen ini?</p>
                                 <div class="modal-action flex justify-start mt-4 space-x-4">
-                                    <x-form action="{{ route('student.attendance.destroy', $attendance->id) }}"
+                                    <x-form action="{{ route('student.history.destroy', $attendance->id) }}"
                                         style="display: inline;">
                                         @csrf
                                         @method('DELETE')
@@ -53,7 +56,7 @@
                                 </div>
                             </div>
                         </dialog>
-                    @endif --}}
+                    @endif
                 </div>
 
                 <div class="stats shadow">
@@ -82,9 +85,9 @@
                                 @if ($attendance->status == 'Izin')
                                     {{ $attendance->note }}
                                 @else
-                                    <a
-                                        href="{{ asset('storage/attendance/' . $attendance->student->name . $attendance->note) }}">
-                                        <span class="bade badge-primary">Surat Sakit</span>
+                                    <a href="{{ asset('storage/attendance/' . $attendance->student->name . '/' . $attendance->note) }}"
+                                        target="_blank">
+                                        <span class="badge badge-primary">Surat Sakit</span>
                                     </a>
                                 @endif
                             </div>

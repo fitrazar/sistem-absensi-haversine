@@ -56,4 +56,11 @@ class HistoryController extends Controller
         $waktuAbsen = Time::first();
         return view('student.history.show', compact('attendance', 'waktuAbsen'));
     }
+
+    public function destroy(Attendance $attendance)
+    {
+        Attendance::destroy($attendance->id);
+
+        return redirect('/siswa/history')->with('success', 'Absen Berhasil Dihapus, Kamu Bisa Melakukan Absen Ulang.');
+    }
 }
