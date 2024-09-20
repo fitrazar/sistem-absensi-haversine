@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\TimeController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\SubjectController;
@@ -30,7 +31,9 @@ Route::prefix('')->middleware(['auth'])->group(function () {
 
 
     Route::group(['middleware' => ['role:teacher|admin']], function () {
-
+        Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('/attendance/{attendance}', [AttendanceController::class, 'show'])->name('attendance.show');
+        Route::post('/attendance/export', [AttendanceController::class, 'export'])->name('attendance.export');
     });
 
     Route::group(['middleware' => ['role:admin']], function () {

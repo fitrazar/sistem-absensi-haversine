@@ -18,14 +18,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class AttendanceExport implements FromQuery, WithMapping, WithHeadings, WithChunkReading, WithStyles, ShouldAutoSize, WithProperties
 {
     use Exportable;
-    private $place;
     private $from;
     private $to;
     private $rowNumber = 0;
 
-    public function __construct($place, $from, $to)
+    public function __construct($from, $to)
     {
-        $this->place = $place;
         $this->from = $from;
         $this->to = $to;
     }
@@ -33,14 +31,14 @@ class AttendanceExport implements FromQuery, WithMapping, WithHeadings, WithChun
     public function properties(): array
     {
         return [
-            'creator' => 'Fitra Fajar',
-            'lastModifiedBy' => 'Fitra Fajar',
+            'creator' => 'Equitry',
+            'lastModifiedBy' => 'Equitry',
             'title' => 'Data Absensi',
             'description' => 'Data Absensi',
             'subject' => 'Data Absensi',
             'keywords' => 'absen',
             'category' => 'absen',
-            'manager' => 'Fitra Fajar',
+            'manager' => 'Equitry',
         ];
     }
 
@@ -48,32 +46,10 @@ class AttendanceExport implements FromQuery, WithMapping, WithHeadings, WithChun
     {
         $query = Attendance::query();
         $user = Auth::user();
-        if ($user->roles->pluck('name')[0] == 'admin') {
-            if ($this->place != '' && $this->place != 'All') {
-                $query->whereHas('student.internship.recommendation', function ($query) {
-                    $query->where('id', $this->place);
-                })->with('student.internship.recommendation');
-            }
-        } else if ($user->roles->pluck('name')[0] == 'teacher') {
-            if ($this->place != '' && $this->place != 'All') {
-                $query->whereHas('student.internship.recommendation', function ($query) use ($user) {
-                    $query->where('teacher_id', $user->teacher->id)->where('id', $this->place);
-                })->with('student.internship.recommendation');
-            } else {
-                $query->whereHas('student.internship.recommendation', function ($query) use ($user) {
-                    $query->where('teacher_id', $user->teacher->id);
-                })->with('student.internship.recommendation');
-            }
-        } else {
-            if ($this->place != '' && $this->place != 'All') {
-                $query->whereHas('student.internship.recommendation', function ($query) use ($user) {
-                    $query->where('major_id', $user->headmaster->major_id)->where('id', $this->place);
-                })->with('student.internship.recommendation');
-            } else {
-                $query->whereHas('student.internship.recommendation', function ($query) use ($user) {
-                    $query->where('major_id', $user->headmaster->major_id);
-                })->with('student.internship.recommendation');
-            }
+        if ($user->roles->pluck('name')[0] == 'teacher') {
+            $query->whereHas('schedule.subject', function ($query) use ($user) {
+                $query->where('teacher_id', $user->teacher->id);
+            })->with('schedule.subject');
         }
 
         if ($this->from && $this->to) {
@@ -96,8 +72,9 @@ class AttendanceExport implements FromQuery, WithMapping, WithHeadings, WithChun
         return [
             $this->rowNumber,
             $attendance->student->name,
-            $attendance->student->internship->recommendation->name,
+            $attendance->student->grade->name . ' ' . $attendance->student->major->acronym . ' ' . $attendance->student->group->number,
             $attendance->status,
+            $attendance->schedule->subject->name ?? '-',
             $attendance->created_at,
         ];
     }
@@ -106,8 +83,9 @@ class AttendanceExport implements FromQuery, WithMapping, WithHeadings, WithChun
         return [
             'No',
             'Nama Siswa',
-            'Tempat PKL',
+            'Kelas',
             'Status',
+            'Mapel',
             'Tanggal',
         ];
     }
@@ -125,8 +103,8 @@ class AttendanceExport implements FromQuery, WithMapping, WithHeadings, WithChun
                 'name' => 'Times New Roman'
             ],
         ];
-        $sheet->getStyle('A2:E' . $this->rowNumber + 1)->applyFromArray($styleArray);
-        $sheet->getStyle('A1:E1')->applyFromArray([
+        $sheet->getStyle('A2:F' . $this->rowNumber + 1)->applyFromArray($styleArray);
+        $sheet->getStyle('A1:F1')->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
