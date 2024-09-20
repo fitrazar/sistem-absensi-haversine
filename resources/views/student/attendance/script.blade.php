@@ -11,6 +11,7 @@
         const userId = '{{ auth()->user()->student?->id }}';
         const apiUrl = '{{ route('student.attendance.store') }}';
         const roleId = '{{ auth()->user()->role }}';
+        const locationIframe = document.getElementById('locationIframe'); // Tambahkan elemen untuk iframe
 
         status.addEventListener('change', handleStatusChange);
 
@@ -38,6 +39,7 @@
         function hideAll() {
             $('#fileUpload, #permit, #send, #sendMapel, #sendPermit, #sendSick, #locationSection, #toast-top-left')
                 .hide();
+            locationIframe.innerHTML = ''; // Hapus iframe saat status berubah
         }
 
         function showLocation() {
@@ -100,6 +102,9 @@
                         longitude: longitude,
                     };
 
+                    // Tampilkan iframe dengan peta lokasi
+                    displayLocationIframe(latitude, longitude);
+
                     btn.onclick = function() {
                         sendFormData(formData);
                     }
@@ -125,6 +130,9 @@
                         status: status.value,
                     };
 
+                    // Tampilkan iframe dengan peta lokasi
+                    displayLocationIframe(latitude, longitude);
+
                     btn.onclick = function() {
                         sendFormData(formData);
                     }
@@ -134,6 +142,14 @@
                     $('#note-error').show();
                 }
             );
+        }
+
+        // Fungsi untuk menampilkan iframe Google Maps dengan lat dan long
+        function displayLocationIframe(latitude, longitude) {
+            const googleMapsUrl =
+                `https://www.google.com/maps?q=${latitude},${longitude}&hl=es;z=14&output=embed`;
+            locationIframe.innerHTML =
+                `<iframe width="100%" height="300" src="${googleMapsUrl}" frameborder="0" allowfullscreen></iframe>`;
         }
 
         function sendFormData(data, isFile = false) {

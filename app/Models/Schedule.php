@@ -65,4 +65,14 @@ class Schedule extends Model
         return $this->hasMany(Agenda::class, 'schedule_id');
     }
 
+    /**
+     * Get all of the attendances for the Schedule
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class, 'schedule_id');
+    }
+
 }

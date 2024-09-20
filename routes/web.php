@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Student\HistoryController;
 use App\Http\Controllers\Student\SubjectController as StudentSubjectController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 
@@ -22,6 +23,8 @@ Route::prefix('')->middleware(['auth'])->group(function () {
         Route::get('/subject', action: [StudentSubjectController::class, 'index'])->name('subject.index');
         Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance.index');
         Route::post('/attendance', [StudentAttendanceController::class, 'store'])->name('attendance.store');
+        Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
+        Route::get('/history/{attendance}', [HistoryController::class, 'show'])->name('history.show');
     });
 
 

@@ -12,7 +12,7 @@ class Attendance extends Model
 
     protected $guarded = ['id'];
 
-    protected $with = ['student'];
+    protected $with = ['student', 'schedule'];
 
     /**
      * Get the student that owns the Attendance
@@ -22,5 +22,15 @@ class Attendance extends Model
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class, 'student_id');
+    }
+
+    /**
+     * Get the schedule that owns the Attendance
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function schedule(): BelongsTo
+    {
+        return $this->belongsTo(Schedule::class, 'schedule_id');
     }
 }

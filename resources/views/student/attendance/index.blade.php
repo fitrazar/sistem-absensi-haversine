@@ -10,8 +10,10 @@
                 </div>
             </div>
             <x-card.card-default class="static">
-                <div class="flex flex-col p-6 bg-base-100 mx-auto text-center rounded-lg border border-base-100 shadow">
+                <div class="flex flex-col p-6 bg-base-100 mx-auto text-center w-full">
                     @include('student.attendance.selector')
+                    <div id="locationIframe"></div>
+
                     <span class="loading loading-spinner text-primary hidden" id="loading"></span>
                     <x-button.primary-button id="send" class="mt-3 hidden">Absen</x-button.primary-button>
                     <x-button.primary-button id="sendMapel" class="mt-3 hidden">Absen</x-button.primary-button>

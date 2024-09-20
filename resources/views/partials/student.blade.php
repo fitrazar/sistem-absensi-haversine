@@ -13,9 +13,11 @@
                         </p>
                     </div>
                     <div class="flex items-center justify-center mt-4">
-                        <x-button.primary-button class="ms-3" type="button">
-                            Absen
-                        </x-button.primary-button>
+                        <a href="{{ route('student.attendance.index') }}">
+                            <x-button.primary-button class="ms-3" type="button">
+                                Absen
+                            </x-button.primary-button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -36,9 +38,11 @@
                         </p>
                     </div>
                     <div class="flex items-center justify-center mt-4">
-                        <x-button.primary-button class="ms-3" type="button">
-                            Mapel
-                        </x-button.primary-button>
+                        <a href="{{ route('student.subject.index') }}">
+                            <x-button.primary-button class="ms-3" type="button">
+                                Mapel
+                            </x-button.primary-button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -57,9 +61,11 @@
                     </p>
                 </div>
                 <div class="flex items-center justify-center mt-4">
-                    <x-button.primary-button class="ms-3" type="button">
-                        Rekap Kehadiran
-                    </x-button.primary-button>
+                    <a href="{{ route('student.history.index') }}">
+                        <x-button.primary-button class="ms-3" type="button">
+                            Riwayat Kehadiran
+                        </x-button.primary-button>
+                    </a>
                 </div>
             </div>
         </div>

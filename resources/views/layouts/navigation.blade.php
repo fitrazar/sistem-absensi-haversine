@@ -26,9 +26,10 @@
                     <li><a href="{{ route('setting.index') }}">Pengaturan</a></li>
                 @endrole
             @else
-                <li><a href="#">Absen</a></li>
+                <li><a href="{{ route('student.attendance.index') }}">Absen</a></li>
                 <li><a href="{{ route('profile.edit') }}">Profile</a></li>
-                <li><a href="#">Mapel</a></li>
+                <li><a href="{{ route('student.subject.index') }}">Mapel</a></li>
+                <li><a href="{{ route('student.history.index') }}">Riwayat Absen</a></li>
             @endhasanyrole
         </ul>
     </div>
@@ -93,7 +94,7 @@
             <span class="btm-nav-label text-xs">Beranda</span>
         </a>
         @hasrole('admin')
-            <div class="dropdown dropdown-top relative {{ Request::is('dashboard') ? 'active' : '' }}">
+            <div class="dropdown dropdown-top relative">
                 <div tabindex="0" class="flex flex-col justify-center items-center mt-[0.80rem] gap-1">
                     <i class="fa-solid fa-house" class="h-5 w-5"></i>
                     <span class="btm-nav-label text-xs">Data Master</span>
@@ -113,17 +114,17 @@
             </a>
         @endhasanyrole
         @hasrole('student')
-            <a href="{{ route('dashboard') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('student.attendance.index') }}" class="{{ Request::is('siswa/attendance') ? 'active' : '' }}">
                 <i class="fa-solid fa-house" class="h-5 w-5"></i>
                 <span class="btm-nav-label text-xs">Absen</span>
             </a>
-            <a href="{{ route('profile.edit') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">
-                <i class="fa-solid fa-house" class="h-5 w-5"></i>
-                <span class="btm-nav-label text-xs">Profile</span>
-            </a>
-            <a href="{{ route('dashboard') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('student.subject.index') }}" class="{{ Request::is('siswa/subject') ? 'active' : '' }}">
                 <i class="fa-solid fa-house" class="h-5 w-5"></i>
                 <span class="btm-nav-label text-xs">Mapel</span>
+            </a>
+            <a href="{{ route('student.history.index') }}" class="{{ Request::is('siswa/history') ? 'active' : '' }}">
+                <i class="fa-solid fa-house" class="h-5 w-5"></i>
+                <span class="btm-nav-label text-xs">Riwayat Absen</span>
             </a>
         @endrole
     @endhasanyrole

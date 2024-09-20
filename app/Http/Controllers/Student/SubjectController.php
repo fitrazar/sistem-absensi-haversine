@@ -18,14 +18,14 @@ class SubjectController extends Controller
 
         $today = now()->dayOfWeek;
         $days = [
-                0 => 'Minggu',
-                1 => 'Senin',
-                2 => 'Selasa',
-                3 => 'Rabu',
-                4 => 'Kamis',
-                5 => 'Jumat',
-                6 => 'Sabtu',
-            ];
+            0 => 'Minggu',
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+        ];
 
         $schedules = Schedule::where(function ($query) use ($userGradeId, $userMajorId, $userGroupId) {
             $query->whereHas('major', function ($query) use ($userMajorId) {
@@ -40,12 +40,11 @@ class SubjectController extends Controller
                 if (!empty($search)) {
                     $query->whereHas('subject', function ($query2) use ($search) {
                         $query2->where('name', 'like', '%' . $search . '%');
-                    })->orWhere('day', 'like', '%' . $search . '%');
+                    });
                 }
             })
+            ->where('day', $days[$today])
             ->with(['grade', 'group', 'major'])
-            ->orderByRaw("FIELD(day, $days[$today]) DESC")
-            ->orderBy('day', 'asc')
             ->orderBy('time_in', 'asc')
             ->paginate(7);
 
