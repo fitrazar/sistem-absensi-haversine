@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Teacher\AgendaController;
 use App\Http\Controllers\Student\HistoryController;
 use App\Http\Controllers\Student\SubjectController as StudentSubjectController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
@@ -27,6 +28,12 @@ Route::prefix('')->middleware(['auth'])->group(function () {
         Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
         Route::get('/history/{attendance}', [HistoryController::class, 'show'])->name('history.show');
         Route::delete('/history/{attendance}', [HistoryController::class, 'destroy'])->name('history.destroy');
+    });
+
+    Route::prefix('guru')->name('teacher.')->middleware(['role:teacher'])->group(function () {
+        Route::resource('/agenda', AgendaController::class)->except('show');
+        Route::post('/search', [AgendaController::class, 'getClass'])->name('search');
+
     });
 
 

@@ -1,85 +1,144 @@
 <?php
 
 use App\Models\User;
+use App\Models\Grade;
+use App\Models\Group;
+use App\Models\Major;
+use App\Models\Student;
+use Illuminate\Http\UploadedFile;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
-test('profile page is displayed', function () {
-    $user = User::factory()->create();
+beforeEach(function () {
+    // Simulasi user dan student
 
-    $response = $this
-        ->actingAs($user)
-        ->get('/profile');
+    $this->role = Role::create([
+        'name' => 'student',
+    ]);
 
-    $response->assertOk();
+    $this->user = User::create([
+        'username' => 'student123',
+        'password' => bcrypt('password'),
+    ]);
+    $this->user->assignRole($this->role->name);
+
+
+    $this->grade = Grade::create([
+        'name' => 'X',
+        'status' => 1,
+    ]);
+    $this->major = Major::create([
+        'acronym' => 'TKJ',
+        'name' => 'Teknik Komputer Jaringan',
+        'status' => 1,
+    ]);
+    $this->group = Group::create([
+        'number' => 1,
+        'status' => 1,
+    ]);
+
+    $this->student = Student::create([
+        'user_id' => $this->user->id,
+        'grade_id' => $this->grade->id,
+        'major_id' => $this->major->id,
+        'group_id' => $this->group->id,
+        'nisn' => '1234567890',
+        'name' => 'John Doe',
+        'gender' => 'Laki - Laki',
+        'phone' => '08123456789',
+        'address' => 'Jl. Merdeka',
+        'photo' => null,
+        'point' => 100,
+    ]);
 });
 
-test('profile information can be updated', function () {
-    $user = User::factory()->create();
+test('profile can be updated with valid data', function () {
 
     $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        ->actingAs($this->user)
+        ->post('/profile', [
+            'phone' => '08123456780',
+            'address' => 'Jl. Kebangsaan',
         ]);
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+    $response->assertRedirect('/profile');
 
-    $user->refresh();
-
-    $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
-    $this->assertNull($user->email_verified_at);
+    $this->assertDatabaseHas('students', [
+        'user_id' => $this->user->id,
+        'phone' => '08123456780',
+        'address' => 'Jl. Kebangsaan',
+    ]);
 });
 
-test('email verification status is unchanged when the email address is unchanged', function () {
-    $user = User::factory()->create();
 
+test('phone must be numeric', function () {
     $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => $user->email,
+        ->actingAs($this->user)
+        ->post('/profile', [
+            'phone' => 'not-a-number',
         ]);
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
-
-    $this->assertNotNull($user->refresh()->email_verified_at);
+    $response->assertSessionHasErrors('phone');
 });
 
-test('user can delete their account', function () {
-    $user = User::factory()->create();
+test('address can be nullable', function () {
 
     $response = $this
-        ->actingAs($user)
-        ->delete('/profile', [
-            'password' => 'password',
+        ->actingAs($this->user)
+        ->post('/profile', [
+            'address' => null,
         ]);
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/');
+    $response->assertRedirect('/profile');
 
-    $this->assertGuest();
-    $this->assertNull($user->fresh());
+    $this->assertDatabaseHas('students', [
+        'user_id' => $this->user->id,
+        'address' => null,
+    ]);
 });
 
-test('correct password must be provided to delete account', function () {
-    $user = User::factory()->create();
+test('photo must be an image and within size limit', function () {
+
+    Storage::fake('local');
 
     $response = $this
-        ->actingAs($user)
-        ->from('/profile')
-        ->delete('/profile', [
-            'password' => 'wrong-password',
+        ->actingAs($this->user)
+        ->post('/profile', [
+            'photo' => UploadedFile::fake()->create('document.pdf', 500),
         ]);
 
-    $response
-        ->assertSessionHasErrorsIn('userDeletion', 'password')
-        ->assertRedirect('/profile');
+    $response->assertSessionHasErrors('photo');
 
-    $this->assertNotNull($user->fresh());
+    $response = $this
+        ->actingAs($this->user)
+        ->post('/profile', [
+            'photo' => UploadedFile::fake()->image('large-photo.jpg')->size(5000),
+        ]);
+
+    $response->assertSessionHasErrors('photo');
 });
+
+// test('photo can be uploaded and stored', function () {
+
+//     Storage::fake('public');
+
+//     $photo = UploadedFile::fake()->image('photo.jpg', 500, 500);
+
+//     $response = $this
+//         ->actingAs($this->user)
+//         ->post('/profile', [
+//             'photo' => $photo,
+//         ]);
+
+//     // Assert response berhasil
+//     $response->assertRedirect('/profile');
+
+//     Storage::disk('public')->assertExists('student/photo/' . $photo->hashName());
+
+//     $this->assertDatabaseHas('students', [
+//         'user_id' => $this->user->id,
+//         'photo' => $photo->hashName(),
+//     ]);
+// });
+

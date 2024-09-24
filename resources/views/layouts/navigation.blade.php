@@ -20,7 +20,10 @@
                         </details>
                     </li>
                 @endrole
-                <li><a href="#">Data Absensi</a></li>
+                <li><a href="{{ route('attendance.index') }}">Data Absensi</a></li>
+                @hasrole('teacher')
+                    <li><a href="{{ route('teacher.agenda.index') }}">Agenda</a></li>
+                @endrole
                 @hasrole('admin')
                     <li><a href="{{ route('time.index') }}">Waktu Absen</a></li>
                     <li><a href="{{ route('setting.index') }}">Pengaturan</a></li>
@@ -108,11 +111,17 @@
             </div>
         @endrole
         @hasanyrole('admin|teacher')
-            <a href="{{ route('dashboard') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('attendance.index') }}" class="{{ Request::is('attendance') ? 'active' : '' }}">
                 <i class="fa-solid fa-house" class="h-5 w-5"></i>
                 <span class="btm-nav-label text-xs">Data Absensi</span>
             </a>
         @endhasanyrole
+        @hasrole('teacher')
+            <a href="{{ route('teacher.agenda.index') }}" class="{{ Request::is('guru/agenda') ? 'active' : '' }}">
+                <i class="fa-solid fa-house" class="h-5 w-5"></i>
+                <span class="btm-nav-label text-xs">Agenda</span>
+            </a>
+        @endrole
         @hasrole('student')
             <a href="{{ route('student.attendance.index') }}" class="{{ Request::is('siswa/attendance') ? 'active' : '' }}">
                 <i class="fa-solid fa-house" class="h-5 w-5"></i>

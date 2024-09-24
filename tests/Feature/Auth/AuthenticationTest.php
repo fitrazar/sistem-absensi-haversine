@@ -9,10 +9,15 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    $user = new User([
+        'id' => 1,
+        'username' => 'dummyuser',
+        'password' => bcrypt('password'),
+    ]);
+    $user->save();
 
     $response = $this->post('/login', [
-        'email' => $user->email,
+        'username' => $user->username,
         'password' => 'password',
     ]);
 
@@ -20,11 +25,16 @@ test('users can authenticate using the login screen', function () {
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
-test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+test('users cannot authenticate with invalid password', function () {
+    $user = new User([
+        'id' => 1,
+        'username' => 'dummyuser',
+        'password' => bcrypt('password'),
+    ]);
+    $user->save();
 
     $this->post('/login', [
-        'email' => $user->email,
+        'username' => $user->username,
         'password' => 'wrong-password',
     ]);
 
@@ -32,7 +42,12 @@ test('users can not authenticate with invalid password', function () {
 });
 
 test('users can logout', function () {
-    $user = User::factory()->create();
+    $user = new User([
+        'id' => 1,
+        'username' => 'dummyuser',
+        'password' => bcrypt('password'),
+    ]);
+    $user->save();
 
     $response = $this->actingAs($user)->post('/logout');
 

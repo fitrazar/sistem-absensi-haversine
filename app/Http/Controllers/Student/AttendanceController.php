@@ -161,7 +161,7 @@ class AttendanceController extends Controller
                 $status = 'Absen Pulang';
             }
             $message = 'Absen Pulang Berhasil!';
-        } else {
+        } else if ($currentTime->gt($timeOutLate) && $currentTime->lt($timeInEarly)) {
             return response()->json(['message' => 'Waktu absen telah habis!']);
         }
 

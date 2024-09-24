@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
         $teacher->assignRole('teacher');
 
         $student = User::create([
-            'username' => '1000',
+            'username' => '2000',
             'password' => bcrypt('password'),
             'remember_token' => Str::random(10),
             'created_at' => now(),
