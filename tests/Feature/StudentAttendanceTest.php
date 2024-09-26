@@ -177,7 +177,7 @@ test('student can perform absen mapel if already performed absen masuk', functio
     ]);
 
     Schedule::create([
-        'day' => 'Senin',
+        'day' => 'Rabu',
         'time_in' => '08:00:00',
         'time_out' => '10:00:00',
         'grade_id' => $this->grade->id,
